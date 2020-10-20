@@ -33,20 +33,23 @@ my_vec_map : (a -> b) -> Vect n a -> Vect n b
 my_vec_map f [] = []
 my_vec_map f (x :: xs) = f x :: my_vec_map f xs
 
+-- type constructor
+Matrix : Nat -> Nat -> Type -> Type
+Matrix n m a = Vect n (Vect m a)
 
-transposeMat : {n: _} -> Vect m (Vect n elem) -> Vect n (Vect m elem)
+transposeMat : {n: _} -> Matrix m n a -> Matrix n m a
 transposeMat [] = replicate n []
 transposeMat (x :: xs) = zipWith (::) x $ transposeMat xs
 
-addMatrix : Num a => Vect n (Vect m a) -> Vect n (Vect m a) -> Vect n (Vect m a)
+addMatrix : Num a => Matrix n m a -> Matrix n m a -> Matrix n m a
 addMatrix xs ys = zipWith (\x, y => zipWith (+) x y) xs ys
 
 
-multHelper : Num a => Vect n (Vect m a) -> Vect p (Vect m a) -> Vect n (Vect p a)
+multHelper : Num a => Matrix n m a -> Matrix p m a -> Matrix n p a
 multHelper [] ys = []
 multHelper (x :: xs) ys = map (\y => sum $ zipWith (*) x y) ys :: multHelper xs ys
 
-multMatrix : Num a => {p: _} -> Vect n (Vect m a) -> Vect m (Vect p a) -> Vect n (Vect p a)
+multMatrix : Num a => {p: _} -> Matrix n m a -> Matrix m p a -> Matrix n p a
 multMatrix xs ys = multHelper xs $ transposeMat ys
 
 
